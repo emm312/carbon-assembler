@@ -82,7 +82,7 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
 #[derive(Debug, PartialEq, Logos, Clone)]
 pub enum Token {
     #[error]
-    #[regex(r"[ \t\n\f]+", logos::skip)]
+    #[regex(r"[ \t\n\f\r]+", logos::skip)]
     Error,
 
     #[regex("ZR|!ZR|MSB|!MSB|COUT|!COUT|UCD", cond, priority = 1)]
