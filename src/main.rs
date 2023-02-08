@@ -9,7 +9,7 @@ struct Args {
     #[arg(name = "Input file")]
     input_file: String,
 
-    #[arg(name = "Output file", default_value_t = String::from("out.b"))]
+    #[arg(short, long, name = "Output file", default_value_t = String::from("out.b"))]
     output: String
 }
 
