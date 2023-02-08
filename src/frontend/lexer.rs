@@ -1,4 +1,4 @@
-use logos::{Logos, Lexer, internal::LexerInternal};
+use logos::{Logos, Lexer};
 use std::process::exit;
 
 use crate::instr::*;

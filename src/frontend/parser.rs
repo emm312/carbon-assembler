@@ -31,10 +31,6 @@ impl TokenBuffer {
     pub fn has_next(&mut self) -> bool {
         self.pos < self.toks.len()
     }
-    pub fn next(&mut self) -> Token {
-        self.advance();
-        self.current()
-    }
 
     pub fn current(&mut self) -> Token {
         self.toks[self.pos].clone()
