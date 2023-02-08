@@ -1,0 +1,8 @@
+LDI R0
+0
+RLD R0
+LDI R1
+1
+ADD R1 
+ADR R1
+JMP 6

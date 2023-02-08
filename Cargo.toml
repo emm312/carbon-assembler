@@ -1,0 +1,12 @@
+[package]
+name = "carbon-assembler"
+version = "0.1.0"
+edition = "2021"
+license = "GPLv3"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.1.4", features = [ "derive" ] }
+logos = "0.12.1"
+parse_int = "0.6.0"
