@@ -52,7 +52,7 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
         "HLT" => CarbonInstrVariants::Hlt,
         "ADD" => CarbonInstrVariants::Add,
         "SUB" => CarbonInstrVariants::Sub,
-        "BSB" => CarbonInstrVariants::Bsb,
+        "BSUB" => CarbonInstrVariants::Bsb,
         "OR" => CarbonInstrVariants::Or,
         "NOR" => CarbonInstrVariants::Nor,
         "AND" => CarbonInstrVariants::And,
