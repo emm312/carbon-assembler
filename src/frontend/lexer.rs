@@ -74,6 +74,7 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
         "BSL" => CarbonInstrVariants::Bsl,
         "PST" => CarbonInstrVariants::Pst,
         "PLD" => CarbonInstrVariants::Pld,
+        "INC" => CarbonInstrVariants::Inc,
         _ => { println!("Invalid instruction: {}", slice); exit(-1) }
     })
 }

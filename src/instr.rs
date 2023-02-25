@@ -24,7 +24,8 @@ pub enum CarbonInstrVariants {
     Bsr,
     Bsl,
     Pst,
-    Pld
+    Pld,
+    Inc
 }
 
 #[derive(PartialEq, Debug, Clone)]

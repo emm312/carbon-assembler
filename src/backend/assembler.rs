@@ -34,7 +34,8 @@ pub fn assemble(file: &mut impl Write, ast: Vec<CarbonASMProgram>) {
                     CarbonInstrVariants::Bsr =>  write!(file, "10101").unwrap(),
                     CarbonInstrVariants::Bsl =>  write!(file, "10110").unwrap(),
                     CarbonInstrVariants::Pst =>  write!(file, "10111").unwrap(),
-                    CarbonInstrVariants::Pld =>  write!(file, "11000").unwrap()
+                    CarbonInstrVariants::Pld =>  write!(file, "11000").unwrap(),
+                    CarbonInstrVariants::Inc =>  write!(file, "11001").unwrap(),
                 }
                 match i.operand {
                     Some(v) => {
