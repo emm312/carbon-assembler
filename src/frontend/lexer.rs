@@ -1,4 +1,4 @@
-use logos::{Logos, Lexer};
+use logos::{Lexer, Logos};
 use std::process::exit;
 
 use crate::instr::*;
@@ -9,7 +9,11 @@ pub fn register(lex: &mut Lexer<Token>) -> Option<u8> {
     let mut tmp = slice.to_string();
     tmp.remove(0);
     slice = tmp.as_str();
-    Some(slice.parse::<u8>().expect(&format!("Invalid reg: {}", slice)))
+    Some(
+        slice
+            .parse::<u8>()
+            .expect(&format!("Invalid reg: {}", slice)),
+    )
 }
 
 pub fn immediate(lex: &mut Lexer<Token>) -> Option<u8> {
@@ -20,35 +24,20 @@ pub fn immediate(lex: &mut Lexer<Token>) -> Option<u8> {
 pub fn cond(lex: &mut Lexer<Token>) -> Option<CarbonConds> {
     let slice = lex.slice();
     match slice {
-        "ZR" => {
-            Some(CarbonConds::ZR)
-        }
-        "!ZR" => {
-            Some(CarbonConds::NZR)
-        },
-        "MSB" => {
-            Some(CarbonConds::MSB)
-        },
-        "!MSB" => {
-            Some(CarbonConds::NMSB)
-        },
-        "COUT" => {
-            Some(CarbonConds::COUT)
-        },
-        "!COUT" => {
-            Some(CarbonConds::NCOUT)
-        },
-        "UCD" => {
-            Some(CarbonConds::UCD)
-        },
-        _ => unreachable!()
+        "ZR" => Some(CarbonConds::ZR),
+        "!ZR" => Some(CarbonConds::NZR),
+        "MSB" => Some(CarbonConds::MSB),
+        "!MSB" => Some(CarbonConds::NMSB),
+        "COUT" => Some(CarbonConds::COUT),
+        "!COUT" => Some(CarbonConds::NCOUT),
+        "UCD" => Some(CarbonConds::UCD),
+        _ => unreachable!(),
     }
 }
 
 pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
     let slice = lex.slice();
-    Some(
-    match slice.to_uppercase().as_str() {
+    Some(match slice.to_uppercase().as_str() {
         "HLT" => CarbonInstrVariants::Hlt,
         "ADD" => CarbonInstrVariants::Add,
         "SUB" => CarbonInstrVariants::Sub,
@@ -75,10 +64,12 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
         "PST" => CarbonInstrVariants::Pst,
         "PLD" => CarbonInstrVariants::Pld,
         "INC" => CarbonInstrVariants::Inc,
-        _ => { println!("Invalid instruction: {}", slice); exit(-1) }
+        _ => {
+            println!("Invalid instruction: {}", slice);
+            exit(-1)
+        }
     })
 }
-
 
 #[derive(Debug, PartialEq, Logos, Clone)]
 pub enum Token {
@@ -97,19 +88,18 @@ pub enum Token {
     Immediate(u8),
 
     #[regex("\\w+", instr, priority = 0)]
-    Instr(CarbonInstrVariants)
+    Instr(CarbonInstrVariants),
 }
 
 pub fn tokenise(src: &str) -> Vec<Token> {
     let mut lexer = Token::lexer(src);
     let mut ret = Vec::new();
-'l: loop {
+    'l: loop {
         let cur_tok = lexer.next();
         match cur_tok {
             Some(tok) => ret.push(tok),
-            None => break 'l
+            None => break 'l,
         }
     }
     ret
-    
 }

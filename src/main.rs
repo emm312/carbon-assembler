@@ -1,5 +1,5 @@
-mod frontend;
 mod backend;
+mod frontend;
 mod instr;
 
 use clap::Parser;
@@ -10,7 +10,7 @@ struct Args {
     input_file: String,
 
     #[arg(short, long, name = "Output file", default_value_t = String::from("out.b"))]
-    output: String
+    output: String,
 }
 
 fn main() {

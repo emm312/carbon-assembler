@@ -25,7 +25,7 @@ pub enum CarbonInstrVariants {
     Bsl,
     Pst,
     Pld,
-    Inc
+    Inc,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -36,23 +36,24 @@ pub enum CarbonConds {
     NMSB,
     COUT,
     NCOUT,
-    UCD
+    UCD,
 }
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum CarbonOperand {
     Cond(CarbonConds),
-    Reg(u8)
+    Reg(u8),
+    JmpAddr(u8),
 }
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct CarbonInstr {
     pub opcode: CarbonInstrVariants,
-    pub operand: Option<CarbonOperand>
+    pub operand: Option<Vec<CarbonOperand>>,
 }
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum CarbonASMProgram {
     Instruction(CarbonInstr),
-    Immediate(u8)
+    Immediate(u8),
 }
