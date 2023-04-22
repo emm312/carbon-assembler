@@ -19,7 +19,6 @@ pub enum CarbonInstrVariants {
     Ics,
     Jid,
     Brc,
-    Jmp,
     Cmp,
     Bsr,
     Bsl,

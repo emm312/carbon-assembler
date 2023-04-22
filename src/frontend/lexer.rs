@@ -30,7 +30,7 @@ pub fn cond(lex: &mut Lexer<Token>) -> Option<CarbonConds> {
         "!MSB" => Some(CarbonConds::NMSB),
         "COUT" => Some(CarbonConds::COUT),
         "!COUT" => Some(CarbonConds::NCOUT),
-        "UCD" => Some(CarbonConds::UCD),
+        "JMP" => Some(CarbonConds::UCD),
         _ => unreachable!(),
     }
 }
@@ -57,7 +57,6 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
         "ICS" => CarbonInstrVariants::Ics,
         "JID" => CarbonInstrVariants::Jid,
         "BRC" => CarbonInstrVariants::Brc,
-        "JMP" => CarbonInstrVariants::Jmp,
         "CMP" => CarbonInstrVariants::Cmp,
         "BSR" => CarbonInstrVariants::Bsr,
         "BSL" => CarbonInstrVariants::Bsl,
@@ -77,7 +76,7 @@ pub enum Token {
     #[regex(r"[ \t\n\f\r]+", logos::skip)]
     Error,
 
-    #[regex("ZR|!ZR|MSB|!MSB|COUT|!COUT|UCD", cond, priority = 1)]
+    #[regex("ZR|!ZR|MSB|!MSB|COUT|!COUT|JMP", cond, priority = 1)]
     Cond(CarbonConds),
 
     #[regex("\\$[0-9]+", register, priority = 4)]

@@ -60,25 +60,37 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                 ret.push(CarbonASMProgram::Immediate(val));
             }
             Token::Instr(val) => {
-                if val == CarbonInstrVariants::Hlt || val == CarbonInstrVariants::Ics {
+                if val == CarbonInstrVariants::Hlt {
                     ret.push(CarbonASMProgram::Instruction(CarbonInstr {
                         opcode: val,
-                        operand: None,
-                    }))
-                } else if val == CarbonInstrVariants::Jmp {
+                        operand: None
+                    }))   
+                } else if val == CarbonInstrVariants::Ics {
+                    buf.advance();
+                    let cond = match buf_consume(
+                        &mut buf,
+                        &[Token::Cond(instr::CarbonConds::COUT)],
+                        "Expected cond after brc",
+                    ) {
+                        Token::Cond(c) => c,
+                        _ => unreachable!(),
+                    };
                     buf.advance();
                     ret.push(CarbonASMProgram::Instruction(CarbonInstr {
-                        opcode: CarbonInstrVariants::Jmp,
-                        operand: Some(vec![CarbonOperand::JmpAddr(
-                            match buf_consume(
-                                &mut buf,
-                                &[Token::Immediate(0)],
-                                "Expected jump address after jump inst",
-                            ) {
-                                Token::Immediate(a) => a,
-                                _ => unreachable!(),
-                            },
-                        )]),
+                        opcode: CarbonInstrVariants::Ics,
+                        operand: Some(vec![
+                            instr::CarbonOperand::Cond(cond),
+                            CarbonOperand::JmpAddr(
+                                match buf_consume(
+                                    &mut buf,
+                                    &[Token::Immediate(0)],
+                                    "Expected jump address after jump inst",
+                                ) {
+                                    Token::Immediate(a) => a,
+                                    _ => unreachable!(),
+                                },
+                            ),
+                        ]),
                     }))
                 } else if val == CarbonInstrVariants::Brc {
                     buf.advance();
