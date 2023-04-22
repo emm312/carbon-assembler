@@ -45,10 +45,6 @@ impl TokenBuffer {
             )
         }
     }
-    pub fn next(&mut self) -> Token {
-        self.advance();
-        self.current()
-    }
 }
 
 pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
