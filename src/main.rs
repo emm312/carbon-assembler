@@ -18,5 +18,6 @@ fn main() {
     let src = std::fs::read_to_string(args.input_file).unwrap();
     let toks = frontend::lexer::tokenise(&src);
     let ast = frontend::parser::parse(toks);
+
     backend::assembler::assemble(&mut std::fs::File::create(args.output).unwrap(), ast);
 }

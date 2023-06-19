@@ -80,7 +80,7 @@ pub enum Token {
     Cond(CarbonConds),
 
     #[regex("\\$[0-9]+", register, priority = 4)]
-    #[regex("(R|r)[1-7]", register, priority = 4)]
+    #[regex("(R|r)[0-7]", register, priority = 4)]
     Register(u8),
 
     #[regex("[0-9]+", immediate, priority = 1)]
