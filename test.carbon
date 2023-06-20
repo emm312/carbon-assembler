@@ -1,3 +1,164 @@
 >0
-LDI R0
+LDI R3
 2
+RLD R3
+PST $1
+LDI R6
+0
+LDI R3
+1
+LDI R4
+4
+PLD $0
+RST R1
+LDI R2
+15
+RLD R6
+CMP R0
+LDI R7
+1
+ICS !ZR # goes to page 1
+0
+RLD R2
+CMP R3
+LDI R7
+5
+ICS ZR # goes to page 5
+8
+DEC
+RST R2
+BRC JMP
+16
+>1
+LDI R5
+0
+MLD R5
+CMP R1
+BRC !ZR
+14
+RLD R5
+INC
+RST R5
+MLD R5
+LDI R7
+2
+ICS ZR # goes to page 2
+0
+LDI R7
+5
+ICS JMP # goes to page 5
+0
+>2
+LDI R5
+0
+MLD R5
+INC
+CMP R1
+BRC !ZR
+15
+RLD R5
+INC
+RST R5
+MLD R5
+INC
+CMP R2
+BRC ZR
+25
+RLD R5
+INC
+RST R5
+CMP R6
+LDI R7
+3
+ICS ZR # goes to page 3
+0
+BRC JMP
+2
+RLD R1
+DEC
+RST R1
+LDI R7
+5
+ICS JMP # goes to page 5
+8
+>3
+LDI R5
+0
+MLD R5
+DEC
+CMP R1
+BRC !ZR
+15
+RLD R5
+INC
+RST R5
+MLD R5
+INC
+CMP R2
+BRC ZR
+25
+RLD R5
+INC
+RST R5
+CMP R6
+LDI R7
+4
+ICS ZR # goes to page 4
+0
+BRC JMP
+2
+RLD R1
+INC
+RST R1
+LDI R7
+5
+ICS JMP # goes to page 5
+8
+>4
+RLD R1
+MST R6
+RLD R6
+INC
+RST R6
+RLD R2
+MST R6
+RLD R6
+INC
+RST R6
+LDI R7
+0
+ICS JMP # goes to page 0
+10
+>5
+RLD R5
+INC
+RST R5
+CMP R6
+LDI R7
+1
+ICS !ZR # goes to page 1
+2
+RLD R1 # write pixel X
+PST $3
+RLD R2 # write pixel Y
+PST $2 
+RLD R4 # append
+PST $1
+RLD R2
+DEC
+RST R2
+PST $2 # write pixel Y
+RLD R1 # write pixel X
+PST $3
+RLD R4 # append
+PST $1
+RLD R3 # append
+PST $1
+RLD R2
+CMP R0
+ICS !ZR # goes to page 1
+0
+LDI R7
+4
+ICS JMP # goes to page 4
+0
