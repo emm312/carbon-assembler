@@ -52,7 +52,7 @@ pub fn assemble(ast: Vec<CarbonASMProgram>) -> Vec<PageOutput> {
         let mut word = 0;
         match node {
             CarbonASMProgram::Immediate(i) => {
-                word = i;
+                word = i << 3;
             }
             CarbonASMProgram::Instruction(i) => {
                 match i.opcode {
