@@ -2,7 +2,11 @@ mod backend;
 mod frontend;
 mod instr;
 
+use std::io::Write;
+
 use clap::Parser;
+
+use crate::backend::assembler::PageOutput;
 
 #[derive(Parser)]
 struct Args {
@@ -17,7 +21,22 @@ fn main() {
     let args = Args::parse();
     let src = std::fs::read_to_string(args.input_file).unwrap();
     let toks = frontend::lexer::tokenise(&src);
-    let ast = frontend::parser::parse(toks);
+    let mut ast = frontend::parser::parse(toks.clone());
+    ast = frontend::parser::transform_labels(ast);
+    println!("{:#?}", ast);
+    let asm = backend::assembler::assemble(ast);
+    let out_file = &mut std::fs::File::create(args.output).unwrap();
+    write!(out_file, "// PAGE 0").unwrap();
+    for (pos, word) in asm.iter().enumerate() {
+        if pos % 32 == 1 {
+            if pos / 32 != 0 {
+                write!(out_file, "\n// PAGE {}", pos / 32).unwrap();
+            }
+        }
 
-    backend::assembler::assemble(&mut std::fs::File::create(args.output).unwrap(), ast);
+        match word {
+            PageOutput::Lit(n) => write!(out_file, "\n{:08b}", n).unwrap(),
+            PageOutput::Comment(n) => write!(out_file, " {}", *n).unwrap(),
+        };
+    }
 }

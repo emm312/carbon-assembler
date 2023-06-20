@@ -25,6 +25,7 @@ pub enum CarbonInstrVariants {
     Pst,
     Pld,
     Inc,
+    Dec
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -42,7 +43,22 @@ pub enum CarbonConds {
 pub enum CarbonOperand {
     Cond(CarbonConds),
     Reg(u8),
-    JmpAddr(u8),
+    JmpAddr(JmpAddr),
+}
+
+#[derive(PartialEq, Debug, Clone)]
+pub enum JmpAddr {
+    Literal(u8),
+    Label(String),
+}
+
+impl JmpAddr {
+    pub fn unwrap(&self) -> u8 {
+        match self {
+            JmpAddr::Literal(a) => *a << 3,
+            _ => unreachable!(),
+        }
+    }
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -55,4 +71,8 @@ pub struct CarbonInstr {
 pub enum CarbonASMProgram {
     Instruction(CarbonInstr),
     Immediate(u8),
+    Comment(String),
+    Label(String),
+    PageLabel(usize),
+    LabelDeref(String),
 }

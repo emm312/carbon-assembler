@@ -63,6 +63,7 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
         "PST" => CarbonInstrVariants::Pst,
         "PLD" => CarbonInstrVariants::Pld,
         "INC" => CarbonInstrVariants::Inc,
+        "DEC" => CarbonInstrVariants::Dec,
         _ => {
             println!("Invalid instruction: {}", slice);
             exit(-1)
@@ -88,6 +89,18 @@ pub enum Token {
 
     #[regex("\\w+", instr, priority = 0)]
     Instr(CarbonInstrVariants),
+
+    #[regex("(#|//).*", |lexer| lexer.slice().to_string())]
+    Comment(String),
+
+    #[regex(r"\..[^\s]*", |lexer| { let mut s = lexer.slice().to_string(); s.remove(0); s })]
+    Label(String),
+
+    #[regex(r"\[\w*\]", |lexer| lexer.slice()[1..lexer.slice().len() - 1].to_string())]
+    LabelDeref(String),
+
+    #[regex(r">.[^\s]*", |lexer| lexer.slice()[1..].parse::<usize>().expect("invalid int on pageno"))]
+    PageLabel(usize),
 }
 
 pub fn tokenise(src: &str) -> Vec<Token> {
