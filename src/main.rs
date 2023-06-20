@@ -23,7 +23,6 @@ fn main() {
     let toks = frontend::lexer::tokenise(&src);
     let mut ast = frontend::parser::parse(toks.clone());
     ast = frontend::parser::transform_labels(ast);
-    println!("{:#?}", ast);
     let asm = backend::assembler::assemble(ast);
     let out_file = &mut std::fs::File::create(args.output).unwrap();
     write!(out_file, "// PAGE 0").unwrap();
