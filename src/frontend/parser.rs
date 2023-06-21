@@ -183,7 +183,7 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
             _ => (),
         }
         if let CarbonASMProgram::Label(name) = instr {
-            label_map.insert(name.clone(), pc as u8-1);
+            label_map.insert(name.clone(), pc as u8);
         }
     }
     println!("{:?}", label_map);

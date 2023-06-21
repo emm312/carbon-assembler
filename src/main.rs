@@ -19,7 +19,7 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-    let src = std::fs::read_to_string(args.input_file).unwrap();
+    let src = std::fs::read_to_string(args.input_file).unwrap().to_uppercase();
     let toks = frontend::lexer::tokenise(&src);
     let mut ast = frontend::parser::parse(toks.clone());
     ast = frontend::parser::transform_labels(ast);

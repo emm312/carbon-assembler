@@ -83,7 +83,6 @@ pub fn assemble(ast: Vec<CarbonASMProgram>) -> Vec<PageOutput> {
                     CarbonInstrVariants::Pld => word |= 0b11000000,
                     CarbonInstrVariants::Inc => word |= 0b11001000,
                 }
-                pages.write_comment(format!("# {:?}", i.opcode));
                 match i.operand {
                     Some(v) => {
                         for operand in v {

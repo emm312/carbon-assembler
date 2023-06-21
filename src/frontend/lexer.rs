@@ -24,13 +24,13 @@ pub fn immediate(lex: &mut Lexer<Token>) -> Option<u8> {
 pub fn cond(lex: &mut Lexer<Token>) -> Option<CarbonConds> {
     let slice = lex.slice();
     match slice {
-        "ZR" => Some(CarbonConds::ZR),
-        "!ZR" => Some(CarbonConds::NZR),
-        "MSB" => Some(CarbonConds::MSB),
-        "!MSB" => Some(CarbonConds::NMSB),
-        "COUT" => Some(CarbonConds::COUT),
-        "!COUT" => Some(CarbonConds::NCOUT),
-        "JMP" => Some(CarbonConds::UCD),
+        "EQ" => Some(CarbonConds::NZR),
+        "NEQ" => Some(CarbonConds::MSB),
+        "LT" => Some(CarbonConds::NMSB),
+        "GTEQ" => Some(CarbonConds::COUT),
+        "LTEQ" => Some(CarbonConds::NCOUT),
+        "GT" => Some(CarbonConds::UCD),
+        "JMP" => Some(CarbonConds::ZR),
         _ => unreachable!(),
     }
 }
@@ -77,7 +77,7 @@ pub enum Token {
     #[regex(r"[ \t\n\f\r]+", logos::skip)]
     Error,
 
-    #[regex("ZR|!ZR|MSB|!MSB|COUT|!COUT|JMP", cond, priority = 1)]
+    #[regex("JMP|EQ|NEQ|LT|GTEQ|LTEQ|GT", cond, priority = 1)]
     Cond(CarbonConds),
 
     #[regex("\\$[0-9]+", register, priority = 4)]
