@@ -179,14 +179,13 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
             CarbonASMProgram::Immediate(_) => pc += 1,
             CarbonASMProgram::Instruction(_) => pc += 1,
             CarbonASMProgram::LabelDeref(_) => pc += 1,
-            CarbonASMProgram::PageLabel(n) => pc = n * 32,
+            CarbonASMProgram::PageLabel(_) => pc = 0,
             _ => (),
         }
         if let CarbonASMProgram::Label(name) = instr {
             label_map.insert(name.clone(), pc as u8);
         }
     }
-    println!("{:?}", label_map);
     // second pass, use said map to transform all label refs to the other thingy
     let mut ret: Vec<CarbonASMProgram> = Vec::new();
     for instr in ast {
