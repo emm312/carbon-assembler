@@ -1,4 +1,3 @@
-ldi r0 .Label
-1
-
-brc jmp [Label]
+ldi r0 .label
+0
+[label]

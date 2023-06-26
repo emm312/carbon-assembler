@@ -161,6 +161,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
             Token::Comment(c) => ret.push(CarbonASMProgram::Comment(c)),
             Token::PageLabel(n) => ret.push(CarbonASMProgram::PageLabel(n)),
             Token::Label(n) => ret.push(CarbonASMProgram::Label(n)),
+            Token::LabelDeref(label) => ret.push(CarbonASMProgram::LabelDeref(label)),
             _ => todo!("{:#?}", buf.current()),
         }
         if buf.has_next() {
@@ -173,7 +174,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
 pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
     // first pass; put label PC positions into a HashMap
     let mut label_map: HashMap<String, u8> = HashMap::new();
-    let mut pc = 0;
+    let mut pc = -1;
     for instr in ast.iter() {
         match instr {
             CarbonASMProgram::Immediate(_) => pc += 1,
