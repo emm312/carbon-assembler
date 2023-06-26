@@ -180,7 +180,7 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
             CarbonASMProgram::Immediate(_) => pc += 1,
             CarbonASMProgram::Instruction(_) => pc += 1,
             CarbonASMProgram::LabelDeref(_) => pc += 1,
-            CarbonASMProgram::PageLabel(_) => pc = 0,
+            CarbonASMProgram::PageLabel(_) => pc = -1,
             _ => (),
         }
         if let CarbonASMProgram::Label(name) = instr {
