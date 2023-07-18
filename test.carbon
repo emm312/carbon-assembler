@@ -16,8 +16,7 @@ RLD R7 #increment pointer
 RST R6 #store curent pointer to R6 so i dont have to decrement it later
 INC
 RST R7 #store incremented pointer in R7
-LDI R0 #this is to take care of hazards as a NOP. emm forgot to make NOP so im using this as a placeholder
-0
+NOP #takes care of hazard
 MLD R7 #load second element to acc
 CMP R1 #check if elem 2 is greater than elem 1
 BRC GT

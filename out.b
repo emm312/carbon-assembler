@@ -6,9 +6,9 @@
 01100101 #set pointer to 0
 10100111
 10010010 #check if pointer is at last element #if so set pointer to 0
-01010000
+01000000
 10010001 #if not, keep going
-01100000
+01010000
 01010111
 00000000
 01111111
@@ -21,7 +21,7 @@
 00000000 #this is to take care of hazards as a NOP. emm forgot to make NOP so im using this as a placeholder
 01111111
 10100001 #load second element to acc
-10010101 #check if elem 2 is greater than elem 1
+10010111 #check if elem 2 is greater than elem 1
 00100000
 01110110 # if so dont swap
 01100001 #store acc(elem 2) to first mem cell {else swap}

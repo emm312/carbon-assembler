@@ -64,6 +64,7 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
         "PLD" => CarbonInstrVariants::Pld,
         "INC" => CarbonInstrVariants::Inc,
         "DEC" => CarbonInstrVariants::Dec,
+        "NOP" => CarbonInstrVariants::Nop,
         _ => {
             println!("Invalid instruction: {}", slice);
             exit(-1)
@@ -105,7 +106,13 @@ pub fn tokenise(src: &str) -> Vec<Token> {
     'l: loop {
         let cur_tok = lexer.next();
         match cur_tok {
-            Some(tok) => ret.push(tok.unwrap()),
+            Some(tok) => ret.push({
+                if let Ok(t) = tok {
+                    t
+                } else {
+                    continue 'l;
+                }
+            }),
             None => break 'l,
         }
     }
