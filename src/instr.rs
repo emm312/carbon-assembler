@@ -25,18 +25,19 @@ pub enum CarbonInstrVariants {
     Pst,
     Pld,
     Inc,
-    Dec
+    Dec,
+    Nop,
 }
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum CarbonConds {
-    ZR,
-    NZR,
-    MSB,
-    NMSB,
-    COUT,
-    NCOUT,
-    UCD,
+    JMP = 1,
+    EQ,
+    NEQ,
+    LT,
+    GT,
+    GTEQ,
+    LTEQ,
 }
 
 #[derive(PartialEq, Debug, Clone)]

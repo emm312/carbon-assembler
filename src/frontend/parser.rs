@@ -53,11 +53,13 @@ impl TokenBuffer {
     }
 
     pub fn advance_over_skips(&mut self, ret: &mut Vec<CarbonASMProgram>) {
-        while tok_compare(self.current(), Token::Comment(String::new())) || tok_compare(self.current(), Token::Label(String::new())) {
+        while tok_compare(self.current(), Token::Comment(String::new()))
+            || tok_compare(self.current(), Token::Label(String::new()))
+        {
             match self.current() {
                 Token::Comment(c) => ret.push(CarbonASMProgram::Comment(c)),
                 Token::Label(c) => ret.push(CarbonASMProgram::Label(c)),
-                _ => unreachable!()
+                _ => unreachable!(),
             }
             self.advance();
         }
@@ -73,7 +75,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                 ret.push(CarbonASMProgram::Immediate(val));
             }
             Token::Instr(val) => {
-                if val == CarbonInstrVariants::Hlt {
+                if val == CarbonInstrVariants::Hlt || val == CarbonInstrVariants::Nop {
                     ret.push(CarbonASMProgram::Instruction(CarbonInstr {
                         opcode: val,
                         operand: None,
@@ -83,7 +85,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     buf.advance_over_skips(&mut ret);
                     let cond = match buf_consume(
                         &mut buf,
-                        &[Token::Cond(instr::CarbonConds::COUT)],
+                        &[Token::Cond(instr::CarbonConds::JMP)],
                         "Expected cond after brc",
                     ) {
                         Token::Cond(c) => c,
@@ -113,7 +115,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     buf.advance_over_skips(&mut ret);
                     let cond = match buf_consume(
                         &mut buf,
-                        &[Token::Cond(instr::CarbonConds::COUT)],
+                        &[Token::Cond(instr::CarbonConds::JMP)],
                         "Expected cond after brc",
                     ) {
                         Token::Cond(c) => c,
@@ -139,9 +141,10 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                         ]),
                     }))
                 } else if val == CarbonInstrVariants::Inc || val == CarbonInstrVariants::Dec {
-                    ret.push(CarbonASMProgram::Instruction(
-                        CarbonInstr { opcode: val, operand: None }
-                    ))
+                    ret.push(CarbonASMProgram::Instruction(CarbonInstr {
+                        opcode: val,
+                        operand: None,
+                    }))
                 } else {
                     buf.advance();
                     buf.advance_over_skips(&mut ret);
@@ -178,15 +181,31 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
     for instr in ast.iter() {
         match instr {
             CarbonASMProgram::Immediate(_) => pc += 1,
-            CarbonASMProgram::Instruction(_) => pc += 1,
+            CarbonASMProgram::Instruction(n) => {
+                pc += 1 + n
+                    .operand
+                    .as_ref()
+                    .map(|e| {
+                        e.into_iter().fold(0, |acc, elem| {
+                            if let CarbonOperand::JmpAddr(_) = elem {
+                                acc + 1
+                            } else {
+                                acc
+                            }
+                        })
+                    })
+                    .unwrap_or(0)
+            }
             CarbonASMProgram::LabelDeref(_) => pc += 1,
             CarbonASMProgram::PageLabel(_) => pc = -1,
+
             _ => (),
         }
         if let CarbonASMProgram::Label(name) = instr {
             label_map.insert(name.clone(), pc as u8);
         }
     }
+    println!("{:#?}", label_map);
     // second pass, use said map to transform all label refs to the other thingy
     let mut ret: Vec<CarbonASMProgram> = Vec::new();
     for instr in ast {
@@ -197,17 +216,16 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
                 if let Some(operands) = instr.operand {
                     for (pos, operand) in operands.into_iter().enumerate() {
                         match operand {
-                            CarbonOperand::JmpAddr(n) => {
-                                match n {
-                                    JmpAddr::Label(n) => {
-                                        instr_ret.operand.as_deref_mut().map(|ops| {
-                                            ops[pos] = CarbonOperand::JmpAddr(JmpAddr::Literal(label_map[&n]));
-                                        });
-                                    }
-                                    _ => ()
+                            CarbonOperand::JmpAddr(n) => match n {
+                                JmpAddr::Label(n) => {
+                                    instr_ret.operand.as_deref_mut().map(|ops| {
+                                        ops[pos] =
+                                            CarbonOperand::JmpAddr(JmpAddr::Literal(label_map[&n]));
+                                    });
                                 }
-                            }
-                            _ => ()
+                                _ => (),
+                            },
+                            _ => (),
                         }
                     }
                 }

@@ -24,13 +24,13 @@ pub fn immediate(lex: &mut Lexer<Token>) -> Option<u8> {
 pub fn cond(lex: &mut Lexer<Token>) -> Option<CarbonConds> {
     let slice = lex.slice();
     match slice {
-        "EQ" => Some(CarbonConds::NZR),
-        "NEQ" => Some(CarbonConds::MSB),
-        "LT" => Some(CarbonConds::NMSB),
-        "GTEQ" => Some(CarbonConds::COUT),
-        "LTEQ" => Some(CarbonConds::NCOUT),
-        "GT" => Some(CarbonConds::UCD),
-        "JMP" => Some(CarbonConds::ZR),
+        "EQ" => Some(CarbonConds::EQ),
+        "NEQ" => Some(CarbonConds::NEQ),
+        "LT" => Some(CarbonConds::LT),
+        "GTEQ" => Some(CarbonConds::GTEQ),
+        "LTEQ" => Some(CarbonConds::LTEQ),
+        "GT" => Some(CarbonConds::GT),
+        "JMP" => Some(CarbonConds::JMP),
         _ => unreachable!(),
     }
 }

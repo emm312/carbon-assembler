@@ -35,7 +35,10 @@ fn main() {
         }
 
         match word {
-            PageOutput::Lit(n) => { ctr += 1; write!(out_file, "\n{:08b}", n).unwrap(); },
+            PageOutput::Lit(n) => {
+                ctr += 1;
+                write!(out_file, "\n{:08b}", n).unwrap();
+            }
             PageOutput::Comment(n) => write!(out_file, " {}", *n).unwrap(),
         };
     }

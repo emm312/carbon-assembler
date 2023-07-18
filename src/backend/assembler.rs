@@ -4,7 +4,7 @@ struct PageWriter {
     current_page: usize,
     current_page_ptr: usize,
     pages: Vec<Vec<PageOutput>>,
-    comments: Vec<(String, usize)>
+    comments: Vec<(String, usize)>,
 }
 
 impl PageWriter {
@@ -13,7 +13,7 @@ impl PageWriter {
             current_page: 0,
             current_page_ptr: 0,
             pages: vec![vec![PageOutput::Lit(0); 32]; 32],
-            comments: vec![]
+            comments: vec![],
         }
     }
 
@@ -28,13 +28,14 @@ impl PageWriter {
     }
 
     pub fn write_comment(&mut self, value: String) {
-        self.comments.push((value, self.current_page*32+self.current_page_ptr));
+        self.comments
+            .push((value, self.current_page * 32 + self.current_page_ptr));
     }
 
     pub fn get_pages(self) -> Vec<PageOutput> {
         let mut ret: Vec<PageOutput> = self.pages.into_iter().flatten().collect();
         for (pos, comment) in self.comments.into_iter().enumerate() {
-            ret.insert(comment.1+pos+1, PageOutput::Comment(comment.0));
+            ret.insert(comment.1 + pos + 1, PageOutput::Comment(comment.0));
         }
         ret
     }
@@ -56,6 +57,7 @@ pub fn assemble(ast: Vec<CarbonASMProgram>) -> Vec<PageOutput> {
             }
             CarbonASMProgram::Instruction(i) => {
                 match i.opcode {
+                    CarbonInstrVariants::Nop => word = 0,
                     CarbonInstrVariants::Hlt => word = 0b11111000,
                     CarbonInstrVariants::Add => word |= 0b00001000,
                     CarbonInstrVariants::Sub => word |= 0b00010000,
@@ -116,29 +118,5 @@ pub fn assemble(ast: Vec<CarbonASMProgram>) -> Vec<PageOutput> {
 }
 
 fn write_cond(cond: CarbonConds) -> u8 {
-    let mut word = 0;
-    match cond {
-        CarbonConds::ZR => {
-            word |= 0b001;
-        }
-        CarbonConds::NZR => {
-            word |= 0b010;
-        }
-        CarbonConds::MSB => {
-            word |= 0b011;
-        }
-        CarbonConds::NMSB => {
-            word |= 0b100;
-        }
-        CarbonConds::COUT => {
-            word |= 0b101;
-        }
-        CarbonConds::NCOUT => {
-            word |= 0b110;
-        }
-        CarbonConds::UCD => {
-            word |= 0b111;
-        }
-    }
-    word
+    cond as u8
 }

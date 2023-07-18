@@ -1,33 +1,33 @@
 // PAGE 0
+01010101
+00000111
+01010111 #length of array
+00000000
+01100101 #set pointer to 0
+10100111
+10010010 #check if pointer is at last element #if so set pointer to 0
 01010000
+10010001 #if not, keep going
+01100000
+01010111
 00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
-00000000
+01111111
+01101001 #load first element to R1
+01100111
+01101110 #increment pointer
+11001000 #store curent pointer to R6 so i dont have to decrement it later
+01101111
+01010000 #store incremented pointer in R7
+00000000 #this is to take care of hazards as a NOP. emm forgot to make NOP so im using this as a placeholder
+01111111
+10100001 #load second element to acc
+10010101 #check if elem 2 is greater than elem 1
+00100000
+01110110 # if so dont swap
+01100001 #store acc(elem 2) to first mem cell {else swap}
+01110111
+10010001 #store elem 1 to second mem cell
+00100000
 00000000
 00000000
 00000000
