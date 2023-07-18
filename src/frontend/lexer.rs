@@ -73,10 +73,6 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
 
 #[derive(Debug, PartialEq, Logos, Clone)]
 pub enum Token {
-    #[error]
-    #[regex(r"[ \t\n\f\r]+", logos::skip)]
-    Error,
-
     #[regex("JMP|EQ|NEQ|LT|GTEQ|LTEQ|GT", cond, priority = 1)]
     Cond(CarbonConds),
 
@@ -109,7 +105,7 @@ pub fn tokenise(src: &str) -> Vec<Token> {
     'l: loop {
         let cur_tok = lexer.next();
         match cur_tok {
-            Some(tok) => ret.push(tok),
+            Some(tok) => ret.push(tok.unwrap()),
             None => break 'l,
         }
     }
