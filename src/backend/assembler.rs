@@ -67,7 +67,7 @@ pub fn assemble(ast: Vec<CarbonASMProgram>) -> Vec<PageOutput> {
                     CarbonInstrVariants::And => word |= 0b00110000,
                     CarbonInstrVariants::Nand => word |= 0b00111000,
                     CarbonInstrVariants::Xor => word |= 0b01000000,
-                    CarbonInstrVariants::Xnr => word |= 0b01001000,
+                    CarbonInstrVariants::Lia => word |= 0b01001000,
                     CarbonInstrVariants::Ldi => word |= 0b01010000,
                     CarbonInstrVariants::Adr => word |= 0b01011000,
                     CarbonInstrVariants::Rld => word |= 0b01100000,
@@ -95,6 +95,8 @@ pub fn assemble(ast: Vec<CarbonASMProgram>) -> Vec<PageOutput> {
                                     pages.write(word);
                                     word = a.unwrap();
                                 }
+                                CarbonOperand::Label(_) => (),
+                                _ => unreachable!()
                             }
                         }
                     }

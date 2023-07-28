@@ -24,6 +24,7 @@ pub fn immediate(lex: &mut Lexer<Token>) -> Option<u8> {
 pub fn cond(lex: &mut Lexer<Token>) -> Option<CarbonConds> {
     let slice = lex.slice();
     match slice {
+        "EVEN" => Some(CarbonConds::EVEN),
         "EQ" => Some(CarbonConds::EQ),
         "NEQ" => Some(CarbonConds::NEQ),
         "LT" => Some(CarbonConds::LT),
@@ -47,7 +48,7 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
         "AND" => CarbonInstrVariants::And,
         "NAND" => CarbonInstrVariants::Nand,
         "XOR" => CarbonInstrVariants::Xor,
-        "LIA" => CarbonInstrVariants::Xnr,
+        "LIA" => CarbonInstrVariants::Lia,
         "LDI" => CarbonInstrVariants::Ldi,
         "ADR" => CarbonInstrVariants::Adr,
         "RLD" => CarbonInstrVariants::Rld,

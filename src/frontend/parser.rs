@@ -54,15 +54,25 @@ impl TokenBuffer {
 
     pub fn advance_over_skips(&mut self, ret: &mut Vec<CarbonASMProgram>) {
         while tok_compare(self.current(), Token::Comment(String::new()))
-            || tok_compare(self.current(), Token::Label(String::new()))
         {
             match self.current() {
                 Token::Comment(c) => ret.push(CarbonASMProgram::Comment(c)),
-                Token::Label(c) => ret.push(CarbonASMProgram::Label(c)),
-                _ => unreachable!(),
+                _ => (),
             }
             self.advance();
         }
+    }
+
+    pub fn get_labels(&mut self) -> Vec<CarbonOperand> {
+        let mut ret = Vec::new();
+        while tok_compare(self.current(), Token::Label(String::new())) {
+            match self.current() {
+                Token::Label(l) => ret.push(CarbonOperand::Label(l.to_string())),
+                _ => unreachable!()
+            }
+            self.advance();
+        }
+        ret
     }
 }
 
@@ -82,7 +92,6 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     }))
                 } else if val == CarbonInstrVariants::Ics {
                     buf.advance();
-                    buf.advance_over_skips(&mut ret);
                     let cond = match buf_consume(
                         &mut buf,
                         &[Token::Cond(instr::CarbonConds::JMP)],
@@ -93,22 +102,25 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     };
                     buf.advance();
                     buf.advance_over_skips(&mut ret);
+                    let mut labels = buf.get_labels();
+
+                    labels.append(&mut vec![
+                        instr::CarbonOperand::Cond(cond),
+                        CarbonOperand::JmpAddr(
+                            match buf_consume(
+                                &mut buf,
+                                &[Token::Immediate(0), Token::LabelDeref(String::new())],
+                                "Expected jump address after jump inst",
+                            ) {
+                                Token::Immediate(a) => JmpAddr::Literal(a),
+                                Token::LabelDeref(a) => JmpAddr::Label(a),
+                                _ => unreachable!(),
+                            },
+                        ),
+                    ]);
                     ret.push(CarbonASMProgram::Instruction(CarbonInstr {
                         opcode: CarbonInstrVariants::Ics,
-                        operand: Some(vec![
-                            instr::CarbonOperand::Cond(cond),
-                            CarbonOperand::JmpAddr(
-                                match buf_consume(
-                                    &mut buf,
-                                    &[Token::Immediate(0), Token::LabelDeref(String::new())],
-                                    "Expected jump address after jump inst",
-                                ) {
-                                    Token::Immediate(a) => JmpAddr::Literal(a),
-                                    Token::LabelDeref(a) => JmpAddr::Label(a),
-                                    _ => unreachable!(),
-                                },
-                            ),
-                        ]),
+                        operand: Some(labels),
                     }))
                 } else if val == CarbonInstrVariants::Brc {
                     buf.advance();
@@ -123,24 +135,26 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     };
                     buf.advance();
                     buf.advance_over_skips(&mut ret);
+                    let mut labels = buf.get_labels();
+                    labels.append(&mut vec![
+                        instr::CarbonOperand::Cond(cond),
+                        CarbonOperand::JmpAddr(
+                            match buf_consume(
+                                &mut buf,
+                                &[Token::Immediate(0), Token::LabelDeref(String::new())],
+                                "Expected jump address after jump inst",
+                            ) {
+                                Token::Immediate(a) => JmpAddr::Literal(a),
+                                Token::LabelDeref(a) => JmpAddr::Label(a),
+                                _ => unreachable!(),
+                            },
+                        ),
+                    ]);
                     ret.push(CarbonASMProgram::Instruction(CarbonInstr {
                         opcode: CarbonInstrVariants::Brc,
-                        operand: Some(vec![
-                            instr::CarbonOperand::Cond(cond),
-                            CarbonOperand::JmpAddr(
-                                match buf_consume(
-                                    &mut buf,
-                                    &[Token::Immediate(0), Token::LabelDeref(String::new())],
-                                    "Expected jump address after jump inst",
-                                ) {
-                                    Token::Immediate(a) => JmpAddr::Literal(a),
-                                    Token::LabelDeref(a) => JmpAddr::Label(a),
-                                    _ => unreachable!(),
-                                },
-                            ),
-                        ]),
+                        operand: Some(labels),
                     }))
-                } else if val == CarbonInstrVariants::Inc || val == CarbonInstrVariants::Dec {
+                } else if val == CarbonInstrVariants::Inc || val == CarbonInstrVariants::Dec || val == CarbonInstrVariants::Lia {
                     ret.push(CarbonASMProgram::Instruction(CarbonInstr {
                         opcode: val,
                         operand: None,
@@ -177,7 +191,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
 pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
     // first pass; put label PC positions into a HashMap
     let mut label_map: HashMap<String, u8> = HashMap::new();
-    let mut pc = -1;
+    let mut pc: i8 = -1;
     for instr in ast.iter() {
         match instr {
             CarbonASMProgram::Immediate(_) => pc += 1,
@@ -189,6 +203,9 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
                         e.into_iter().fold(0, |acc, elem| {
                             if let CarbonOperand::JmpAddr(_) = elem {
                                 acc + 1
+                            } else if let CarbonOperand::Label(l) = elem {
+                                label_map.insert(l.clone(), (pc+acc + 1) as u8);
+                                acc
                             } else {
                                 acc
                             }
