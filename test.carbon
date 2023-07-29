@@ -1,6 +1,6 @@
 PLD $7
 ADD R0
-BRC JMP .loop
+BRC EVEN .loop
 [D2]
 RST R2
 BSL $1

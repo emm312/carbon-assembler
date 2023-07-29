@@ -75,7 +75,7 @@ pub fn instr(lex: &mut Lexer<Token>) -> Option<CarbonInstrVariants> {
 
 #[derive(Debug, PartialEq, Logos, Clone)]
 pub enum Token {
-    #[regex("JMP|EQ|NEQ|LT|GTEQ|LTEQ|GT", cond, priority = 1)]
+    #[regex("JMP|EQ|NEQ|LT|GTEQ|LTEQ|GT|EVEN", cond, priority = 1)]
     Cond(CarbonConds),
 
     #[regex("\\$[0-9]+", register, priority = 4)]

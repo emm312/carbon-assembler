@@ -95,7 +95,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     let cond = match buf_consume(
                         &mut buf,
                         &[Token::Cond(instr::CarbonConds::JMP)],
-                        "Expected cond after brc",
+                        "Expected cond after ics",
                     ) {
                         Token::Cond(c) => c,
                         _ => unreachable!(),
