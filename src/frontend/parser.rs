@@ -48,16 +48,10 @@ impl TokenBuffer {
         }
     }
 
-    pub fn pos(&self) -> usize {
-        self.pos
-    }
-
     pub fn advance_over_skips(&mut self, ret: &mut Vec<CarbonASMProgram>) {
-        while tok_compare(self.current(), Token::Comment(String::new()))
-        {
-            match self.current() {
-                Token::Comment(c) => ret.push(CarbonASMProgram::Comment(c)),
-                _ => (),
+        while tok_compare(self.current(), Token::Comment(String::new())) {
+            if let Token::Comment(c) = self.current() {
+                ret.push(CarbonASMProgram::Comment(c));
             }
             self.advance();
         }
@@ -68,7 +62,7 @@ impl TokenBuffer {
         while tok_compare(self.current(), Token::Label(String::new())) {
             match self.current() {
                 Token::Label(l) => ret.push(CarbonOperand::Label(l.to_string())),
-                _ => unreachable!()
+                _ => unreachable!(),
             }
             self.advance();
         }
@@ -94,7 +88,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     buf.advance();
                     let cond = match buf_consume(
                         &mut buf,
-                        &[Token::Cond(instr::CarbonConds::JMP)],
+                        &[Token::Cond(instr::CarbonConds::Jmp)],
                         "Expected cond after ics",
                     ) {
                         Token::Cond(c) => c,
@@ -127,7 +121,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     buf.advance_over_skips(&mut ret);
                     let cond = match buf_consume(
                         &mut buf,
-                        &[Token::Cond(instr::CarbonConds::JMP)],
+                        &[Token::Cond(instr::CarbonConds::Jmp)],
                         "Expected cond after brc",
                     ) {
                         Token::Cond(c) => c,
@@ -154,7 +148,10 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                         opcode: CarbonInstrVariants::Brc,
                         operand: Some(labels),
                     }))
-                } else if val == CarbonInstrVariants::Inc || val == CarbonInstrVariants::Dec || val == CarbonInstrVariants::Lia {
+                } else if val == CarbonInstrVariants::Inc
+                    || val == CarbonInstrVariants::Dec
+                    || val == CarbonInstrVariants::Lia
+                {
                     ret.push(CarbonASMProgram::Instruction(CarbonInstr {
                         opcode: val,
                         operand: None,
@@ -163,7 +160,7 @@ pub fn parse(toks: Vec<Token>) -> Vec<CarbonASMProgram> {
                     buf.advance();
                     buf.advance_over_skips(&mut ret);
                     let err = &format!("expected address ($NUMBER) got {:?}", buf.current());
-                    let tok = buf_consume(&mut buf, &[Token::Register(0)], &err);
+                    let tok = buf_consume(&mut buf, &[Token::Register(0)], err);
                     let mut instr = CarbonInstr {
                         opcode: val,
                         operand: None,
@@ -200,11 +197,11 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
                     .operand
                     .as_ref()
                     .map(|e| {
-                        e.into_iter().fold(0, |acc, elem| {
+                        e.iter().fold(0, |acc, elem| {
                             if let CarbonOperand::JmpAddr(_) = elem {
                                 acc + 1
                             } else if let CarbonOperand::Label(l) = elem {
-                                label_map.insert(l.clone(), (pc+acc + 1) as u8);
+                                label_map.insert(l.clone(), (pc + acc + 1) as u8);
                                 acc
                             } else {
                                 acc
@@ -232,17 +229,10 @@ pub fn transform_labels(ast: Vec<CarbonASMProgram>) -> Vec<CarbonASMProgram> {
                 let mut instr_ret = instr.clone();
                 if let Some(operands) = instr.operand {
                     for (pos, operand) in operands.into_iter().enumerate() {
-                        match operand {
-                            CarbonOperand::JmpAddr(n) => match n {
-                                JmpAddr::Label(n) => {
-                                    instr_ret.operand.as_deref_mut().map(|ops| {
-                                        ops[pos] =
-                                            CarbonOperand::JmpAddr(JmpAddr::Literal(label_map[&n]));
-                                    });
-                                }
-                                _ => (),
-                            },
-                            _ => (),
+                        if let CarbonOperand::JmpAddr(JmpAddr::Label(n)) = operand {
+                            if let Some(ops) = instr_ret.operand.as_deref_mut() {
+                                ops[pos] = CarbonOperand::JmpAddr(JmpAddr::Literal(label_map[&n]));
+                            }
                         }
                     }
                 }

@@ -85,22 +85,18 @@ pub fn assemble(ast: Vec<CarbonASMProgram>) -> Vec<PageOutput> {
                     CarbonInstrVariants::Pld => word |= 0b11000000,
                     CarbonInstrVariants::Inc => word |= 0b11001000,
                 }
-                match i.operand {
-                    Some(v) => {
-                        for operand in v {
-                            match operand {
-                                CarbonOperand::Cond(c) => word |= write_cond(c),
-                                CarbonOperand::Reg(r) => word |= r,
-                                CarbonOperand::JmpAddr(a) => {
-                                    pages.write(word);
-                                    word = a.unwrap();
-                                }
-                                CarbonOperand::Label(_) => (),
-                                _ => unreachable!()
+                if let Some(v) = i.operand {
+                    for operand in v {
+                        match operand {
+                            CarbonOperand::Cond(c) => word |= write_cond(c),
+                            CarbonOperand::Reg(r) => word |= r,
+                            CarbonOperand::JmpAddr(a) => {
+                                pages.write(word);
+                                word = a.unwrap();
                             }
+                            CarbonOperand::Label(_) => (),
                         }
                     }
-                    None => (),
                 }
             }
             CarbonASMProgram::Comment(c) => {

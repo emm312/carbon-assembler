@@ -31,14 +31,14 @@ pub enum CarbonInstrVariants {
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum CarbonConds {
-    EVEN = 0,
-    JMP,
-    EQ,
-    NEQ,
-    LT,
-    GT,
-    GTEQ,
-    LTEQ,
+    Even = 0,
+    Jmp,
+    Eq,
+    Neq,
+    Lt,
+    Gt,
+    Gteq,
+    Lteq,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -46,7 +46,7 @@ pub enum CarbonOperand {
     Cond(CarbonConds),
     Reg(u8),
     JmpAddr(JmpAddr),
-    Label(String)
+    Label(String),
 }
 
 #[derive(PartialEq, Debug, Clone)]

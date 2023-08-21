@@ -1,15 +1,13 @@
-PLD $7
-ADD R0
-BRC EVEN .loop
-[D2]
-RST R2
-BSL $1
-ADD R2
-INC
-PST $7
-BRC JMP
-[loop]
-BSR $1 .D2
-PST $7
-BRC JMP
-[loop]
+// LINE DRAWER
+>0
+// def line(a: r1 b: r2)
+// X.x = X & 0b11110000
+// X.y = X & 0b00001111
+// dx = b.x - a.x
+// dx = r3
+// r7 = 0b11110000
+// r6 = 0b00001111
+
+// get b.x
+RLD r2 .line
+

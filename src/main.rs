@@ -21,17 +21,15 @@ fn main() {
     let args = Args::parse();
     let src = std::fs::read_to_string(args.input_file).unwrap();
     let toks = frontend::lexer::tokenise(&src);
-    let mut ast = frontend::parser::parse(toks.clone());
+    let mut ast = frontend::parser::parse(toks);
     ast = frontend::parser::transform_labels(ast);
     let asm = backend::assembler::assemble(ast);
     let out_file = &mut std::fs::File::create(args.output).unwrap();
     write!(out_file, "// PAGE 0").unwrap();
     let mut ctr = 0;
     for word in asm.iter() {
-        if ctr % 32 == 0 {
-            if ctr / 32 != 0 {
-                write!(out_file, "\n// PAGE {}", ctr / 32).unwrap();
-            }
+        if ctr % 32 == 0 && ctr / 32 != 0 {
+            write!(out_file, "\n// PAGE {}", ctr / 32).unwrap();
         }
 
         match word {

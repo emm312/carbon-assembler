@@ -5,14 +5,14 @@ use crate::instr::*;
 
 pub fn register(lex: &mut Lexer<Token>) -> Option<u8> {
     let mut slice = lex.slice();
-    slice = &slice.trim();
+    slice = slice.trim();
     let mut tmp = slice.to_string();
     tmp.remove(0);
     slice = tmp.as_str();
     Some(
         slice
             .parse::<u8>()
-            .expect(&format!("Invalid reg: {}", slice)),
+            .unwrap_or_else(|_| panic!("Invalid reg: {}", slice)),
     )
 }
 
@@ -24,14 +24,14 @@ pub fn immediate(lex: &mut Lexer<Token>) -> Option<u8> {
 pub fn cond(lex: &mut Lexer<Token>) -> Option<CarbonConds> {
     let slice = lex.slice();
     match slice {
-        "EVEN" => Some(CarbonConds::EVEN),
-        "EQ" => Some(CarbonConds::EQ),
-        "NEQ" => Some(CarbonConds::NEQ),
-        "LT" => Some(CarbonConds::LT),
-        "GTEQ" => Some(CarbonConds::GTEQ),
-        "LTEQ" => Some(CarbonConds::LTEQ),
-        "GT" => Some(CarbonConds::GT),
-        "JMP" => Some(CarbonConds::JMP),
+        "EVEN" => Some(CarbonConds::Even),
+        "EQ" => Some(CarbonConds::Eq),
+        "NEQ" => Some(CarbonConds::Neq),
+        "LT" => Some(CarbonConds::Lt),
+        "GTEQ" => Some(CarbonConds::Gteq),
+        "LTEQ" => Some(CarbonConds::Lteq),
+        "GT" => Some(CarbonConds::Gt),
+        "JMP" => Some(CarbonConds::Jmp),
         _ => unreachable!(),
     }
 }
